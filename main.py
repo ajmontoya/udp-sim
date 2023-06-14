@@ -48,9 +48,10 @@ def cmdline_args() -> tuple[str, int, int, float, bool]:
     return (args.address, args.port, args.timeout, args.delay, args.verbose)
 
 
-def gen_rand_data(t_diff: float) -> iter[dict]:
-    yield {
+def gen_rand_data(t_diff: float) -> iter:
+    return {
         "time": t_diff,
+        "unit": "d126",
         "id": random.choice([0, 1, 2, 3]),
         "rpm": random.randint(0, 5000),
         "power": random.randint(10, 100),
