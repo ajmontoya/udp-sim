@@ -48,16 +48,57 @@ def cmdline_args() -> tuple[str, int, int, float, bool]:
     return (args.address, args.port, args.timeout, args.delay, args.verbose)
 
 
+# return {
+# vehicle: 'd126',
+# escid: randInt(0, 4),
+# 		measurements: {
+# 			time: Date.now(),
+# 			rpm: randInt(0, 5000),
+# 			power: randInt(10, 100),
+# 			voltage: randFloat(0.1, 6.0),
+# 			temp: randFloat(35, 45),
+# 			current: randFloat(-0.01, 0.1),
+# 		},
+# 		labels: [
+# 'time',
+# 'rpm',
+# 'power',
+# 'voltage',
+# 'temp',
+# 'current'
+# 		],
+# 		uom: {
+# time: 'sec',
+# rpm: 'rpm',
+# power: '%',
+# voltage: 'V',
+# temp: '°C',
+# current: 'Amps'
+# 		}
+# 	};
+
+
 def gen_rand_data(t_diff: float) -> iter:
     return {
-        "time": t_diff,
-        "unit": "d126",
-        "id": random.choice([0, 1, 2, 3]),
-        "rpm": random.randint(0, 5000),
-        "power": random.randint(10, 100),
-        "voltage": random.uniform(0.1, 5.9),
-        "temp": random.uniform(35, 45),
-        "current": random.uniform(-0.01, 0.1),
+        "vehicle": "d126",
+        "escid": random.choice([0, 1, 2, 3]),
+        "measurements": {
+            "time": t_diff,
+            "rpm": random.randint(0, 5000),
+            "power": random.randint(10, 100),
+            "voltage": random.uniform(0.1, 5.9),
+            "temp": random.uniform(35, 45),
+            "current": random.uniform(-0.01, 0.1),
+        },
+        "labels": ["time", "rpm", "power", "voltage", "temp", "current"],
+        "uom": {
+            "time": "sec",
+            "rpm": "rpm",
+            "power": "%",
+            "voltage": "V",
+            "temp": "°C",
+            "current": "Amps",
+        },
     }
 
 
