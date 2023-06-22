@@ -48,9 +48,10 @@ def cmdline_args() -> tuple[str, int, int, float, bool]:
     return (args.address, args.port, args.timeout, args.delay, args.verbose)
 
 
-def gen_rand_data(t_diff: float) -> dict:
+def gen_rand_data(testid: float, t_diff: float) -> dict:
     return {
         "vehicle": "d126",
+        "testid": testid,
         "escid": random.choice([0, 1, 2, 3]),
         "measurements": {
             "time": t_diff,
@@ -84,7 +85,7 @@ def main() -> None:
         t_start, t_diff = time.time(), 0
 
         while timeout is None or t_diff < timeout:
-            data = gen_rand_data(t_diff)
+            data = gen_rand_data(t_start, t_diff)
             print(data) if is_verbose else None
 
             payload = json.dumps(data).encode()
