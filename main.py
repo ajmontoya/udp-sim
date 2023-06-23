@@ -48,13 +48,13 @@ def cmdline_args() -> tuple[str, int, int, float, bool]:
     return (args.address, args.port, args.timeout, args.delay, args.verbose)
 
 
-def gen_rand_data(testid: float, t_diff: float) -> dict:
+def gen_rand_data(testid: float, ts_idx: int, count: int) -> dict:
     return {
         "vehicle": "d126",
         "testid": testid,
-        "escid": random.choice([0, 1, 2, 3]),
+        "escid": count,
         "measurements": {
-            "time": t_diff,
+            "time": ts_idx,
             "rpm": random.randint(0, 5000),
             "power": random.randint(10, 100),
             "voltage": random.uniform(0.1, 5.9),
@@ -83,9 +83,10 @@ def main() -> None:
 
     try:
         t_start, t_diff = time.time(), 0
+        count, ts_idx = 0, 1
 
         while timeout is None or t_diff < timeout:
-            data = gen_rand_data(t_start, t_diff)
+            data = gen_rand_data(t_start, ts_idx, count)
             print(data) if is_verbose else None
 
             payload = json.dumps(data).encode()
@@ -93,6 +94,13 @@ def main() -> None:
 
             time.sleep(delay)
             t_diff = time.time() - t_start
+
+            if count < 3:
+                count += 1
+            else:
+                count = 0
+                ts_idx += 1
+
     except KeyboardInterrupt:
         print("Closing socket and exiting...")
         client.close()
