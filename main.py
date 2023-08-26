@@ -132,11 +132,14 @@ def main() -> None:
     try:
         t_start, t_diff = time.time(), 0
         count, ts_idx = 0, 1
+
         cfg = Config(config)
+        rand_esc = random.choice([0, 1, 2, 3]) if cfg == Config.SINGLE else None
 
         if steps:
             for powerStep in steps:
-                data = gen_rand_data(t_start, ts_idx, count, powerStep, cfg, powerStep)
+                escid = count if not rand_esc else rand_esc
+                data = gen_rand_data(t_start, ts_idx, escid, powerStep, cfg, powerStep)
 
                 payload = json.dumps(data).encode()
                 client.sendto(payload, (addr, port))
@@ -151,7 +154,8 @@ def main() -> None:
                     ts_idx += 1
         else:
             while timeout is None or t_diff < timeout:
-                data = gen_rand_data(t_start, ts_idx, count, power, cfg, None)
+                escid = count if not rand_esc else rand_esc
+                data = gen_rand_data(t_start, ts_idx, escid, power, cfg, None)
 
                 payload = json.dumps(data).encode()
                 client.sendto(payload, (addr, port))
