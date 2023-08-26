@@ -42,7 +42,7 @@ def cmdline_args() -> tuple[str, int, int, int, int, list[int], float, bool]:
         "--power",
         type=int,
         default=20,
-        help="ESC power level",
+        help="ESC power level as a percentage [10-100]",
     )
     parser.add_argument(
         "--config",
@@ -51,8 +51,9 @@ def cmdline_args() -> tuple[str, int, int, int, int, list[int], float, bool]:
         help="Test configuration [1: single, 2: cross_02, 3: cross_13, 4: all_4]",
     )
     parser.add_argument(
-        "--step",
-        type=list[int],
+        "--steps",
+        type=int,
+        nargs="*",
         help="Stepwise power intervals",
     )
     parser.add_argument(
@@ -78,7 +79,7 @@ def cmdline_args() -> tuple[str, int, int, int, int, list[int], float, bool]:
         args.timeout,
         args.power,
         args.config,
-        args.step,
+        args.steps,
         args.delay,
         args.verbose,
     )
@@ -117,10 +118,10 @@ def gen_rand_data(
 
 
 def main() -> None:
-    addr, port, timeout, power, config, step, delay, is_verbose = cmdline_args()
+    addr, port, timeout, power, config, steps, delay, is_verbose = cmdline_args()
 
     print(
-        f"address: {addr}, port: {port}, timeout: {timeout}, power: {power}, config: {config}, step: {step}, delay: {delay}, is verbose: {is_verbose}"
+        f"address: {addr}, port: {port}, timeout: {timeout}, power: {power}, config: {config}, step: {steps}, delay: {delay}, is verbose: {is_verbose}"
     )
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -131,18 +132,15 @@ def main() -> None:
     try:
         t_start, t_diff = time.time(), 0
         count, ts_idx = 0, 1
-        step_enabled = True if step else False
         cfg = Config(config)
 
-        if step:
-            for powerStep in step:
-                data = gen_rand_data(
-                    t_start, ts_idx, count, powerStep, cfg, step_enabled
-                )
-                pprint(data) if is_verbose else None
+        if steps:
+            for powerStep in steps:
+                data = gen_rand_data(t_start, ts_idx, count, powerStep, cfg, powerStep)
 
                 payload = json.dumps(data).encode()
                 client.sendto(payload, (addr, port))
+                pprint(payload) if is_verbose else None
 
                 time.sleep(delay)
 
@@ -153,11 +151,11 @@ def main() -> None:
                     ts_idx += 1
         else:
             while timeout is None or t_diff < timeout:
-                data = gen_rand_data(t_start, ts_idx, count, power, cfg, step_enabled)
-                pprint(data) if is_verbose else None
+                data = gen_rand_data(t_start, ts_idx, count, power, cfg, None)
 
                 payload = json.dumps(data).encode()
                 client.sendto(payload, (addr, port))
+                pprint(payload) if is_verbose else None
 
                 time.sleep(delay)
                 t_diff = time.time() - t_start
