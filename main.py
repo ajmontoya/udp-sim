@@ -39,6 +39,11 @@ def cmdline_args() -> tuple[str, int, int, int, int, list[int], float, bool]:
         help="Num seconds to run simulator",
     )
     parser.add_argument(
+        "--testname",
+        default="test-1",
+        help="Name of the test",
+    )
+    parser.add_argument(
         "--power",
         type=int,
         default=20,
@@ -77,6 +82,7 @@ def cmdline_args() -> tuple[str, int, int, int, int, list[int], float, bool]:
         args.address,
         args.port,
         args.timeout,
+        args.testname,
         args.power,
         args.config,
         args.steps,
@@ -86,12 +92,19 @@ def cmdline_args() -> tuple[str, int, int, int, int, list[int], float, bool]:
 
 
 def gen_rand_data(
-    testid: float, ts_idx: int, count: int, power: int, config: Config, step: bool
+    testid: float,
+    ts_idx: int,
+    testname: str,
+    escid: int,
+    power: int,
+    config: Config,
+    step: bool,
 ) -> dict:
     return {
         "vehicle": "d126",
         "testid": testid,
-        "escid": count,
+        "testname": testname,
+        "escid": escid,
         "params": {
             "power": power,
             "config": config.value,
@@ -118,10 +131,20 @@ def gen_rand_data(
 
 
 def main() -> None:
-    addr, port, timeout, power, config, steps, delay, is_verbose = cmdline_args()
+    (
+        addr,
+        port,
+        timeout,
+        testname,
+        power,
+        config,
+        steps,
+        delay,
+        is_verbose,
+    ) = cmdline_args()
 
     print(
-        f"address: {addr}, port: {port}, timeout: {timeout}, power: {power}, config: {config}, step: {steps}, delay: {delay}, is verbose: {is_verbose}"
+        f"address: {addr}, port: {port}, timeout: {timeout}, name: {testname}, power: {power}, config: {config}, step: {steps}, delay: {delay}, is verbose: {is_verbose}"
     )
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -139,7 +162,9 @@ def main() -> None:
         if steps:
             for powerStep in steps:
                 escid = count if not rand_esc else rand_esc
-                data = gen_rand_data(t_start, ts_idx, escid, powerStep, cfg, powerStep)
+                data = gen_rand_data(
+                    t_start, ts_idx, testname, escid, powerStep, cfg, powerStep
+                )
 
                 payload = json.dumps(data).encode()
                 client.sendto(payload, (addr, port))
@@ -155,7 +180,7 @@ def main() -> None:
         else:
             while timeout is None or t_diff < timeout:
                 escid = count if not rand_esc else rand_esc
-                data = gen_rand_data(t_start, ts_idx, escid, power, cfg, None)
+                data = gen_rand_data(t_start, ts_idx, testname, escid, power, cfg, None)
 
                 payload = json.dumps(data).encode()
                 client.sendto(payload, (addr, port))

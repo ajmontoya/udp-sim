@@ -12,6 +12,7 @@ An example of electronic speed controller data from supported Voxel drones is sh
 {
     "vehicle": "d126",
     "testid": 1693020077.37441,
+    "testname": "test-1",
     "escid": 1,
     "params": {
         "power": 60,
@@ -52,6 +53,10 @@ The vehicle value is a string identifier for the drone being simulated.
 ## testid value
 
 The testid value is simply just the epoch time for when the test started. In Python, this defaults to float value.
+
+## testname
+
+The testname value is the name/description for an individual test run.
 
 ## escid value
 
@@ -108,6 +113,12 @@ To simulate running the 0-2 esc cross axis at 45% power level:
 
 ```python
 python3 -m main --config 2 --power 45
+```
+
+To simulate with the same settings but using the name 'peterpan':
+
+```python
+python3 -m main --config 2 --power 45 --testname peterpan
 ```
 
 To simulate running all 4 escs at 15% power level for 10 seconds:
