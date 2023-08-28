@@ -98,7 +98,7 @@ def gen_rand_data(
     escid: int,
     power: int,
     config: Config,
-    step: bool,
+    steps: list[int] | None,
 ) -> dict:
     return {
         "vehicle": "d126",
@@ -108,7 +108,7 @@ def gen_rand_data(
         "params": {
             "power": power,
             "config": config.value,
-            "step": step,
+            "step": steps,
         },
         "measurements": {
             "time": ts_idx,
@@ -163,7 +163,7 @@ def main() -> None:
             for powerStep in steps:
                 escid = count if not rand_esc else rand_esc
                 data = gen_rand_data(
-                    t_start, ts_idx, testname, escid, powerStep, cfg, powerStep
+                    t_start, ts_idx, testname, escid, powerStep, cfg, steps
                 )
 
                 payload = json.dumps(data).encode()
@@ -180,7 +180,9 @@ def main() -> None:
         else:
             while timeout is None or t_diff < timeout:
                 escid = count if not rand_esc else rand_esc
-                data = gen_rand_data(t_start, ts_idx, testname, escid, power, cfg, None)
+                data = gen_rand_data(
+                    t_start, ts_idx, testname, escid, power, cfg, steps
+                )
 
                 payload = json.dumps(data).encode()
                 client.sendto(payload, (addr, port))

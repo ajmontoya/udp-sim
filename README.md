@@ -6,7 +6,9 @@ Simple Python and NodeJS UDP simulator that sends/receives JSON data as payload.
 
 ## ESC JSON Payload
 
-An example of electronic speed controller data from supported Voxel drones is shown below.
+Examples of electronic speed controller data from supported Voxel drones are shown below.
+
+The following is a constant 60% power drone test
 
 ```json
 {
@@ -17,7 +19,47 @@ An example of electronic speed controller data from supported Voxel drones is sh
     "params": {
         "power": 60,
         "config": 4,
-        "step": 60
+        "step": null
+    },
+    "measurements": {
+        "time": 2,
+        "rpm": 3700,
+        "power": 43,
+        "voltage": 4.472304127218034,
+        "temp": 44.74852124225166,
+        "current": 0.033798149409453554
+    },
+    "labels": [
+        "time",
+        "rpm",
+        "power",
+        "voltage",
+        "temp",
+        "current"
+    ],
+    "uom": {
+        "time": "sec",
+        "rpm": "rpm",
+        "power": "%",
+        "voltage": "V",
+        "temp": "\u00b0C",
+        "current": "Amps"
+    }
+}
+```
+
+The following is a stepwise power drone test of 10% to 12% to 14% to 16% power level.
+
+```json
+{
+    "vehicle": "d126",
+    "testid": 1693020077.37441,
+    "testname": "test-1",
+    "escid": 1,
+    "params": {
+        "power": 12,
+        "config": 4,
+        "step": [10, 12, 14, 16]
     },
     "measurements": {
         "time": 2,
