@@ -35,7 +35,6 @@ def cmdline_args() -> tuple[str, int, int, int, int, list[int], float, bool]:
         "-t",
         "--timeout",
         type=int,
-        default=1,
         help="Num seconds to run simulator",
     )
     parser.add_argument(
